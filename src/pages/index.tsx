@@ -1,10 +1,11 @@
 import type { GetStaticProps, NextPage } from "next";
 import Head from "next/head";
-import Image from "next/image";
+import {Image} from '@chakra-ui/react';
 import { useEffect } from "react";
 import styles from "../styles/Home.module.css";
 import { api } from "../services/api";
 import { Button } from "@chakra-ui/react";
+import {BsCart4} from 'react-icons/bs'
 
 type Product = {
     name: string;
@@ -58,18 +59,20 @@ const Home = ({ products }: PropTypes) => {
                                 className={styles.card}
                             >
                                 <Image
-                                    width="100%"
+                                    boxSize="100%"
                                     height="150px"
                                     objectFit="cover"
                                     src={product.image}
                                     alt={product.name}
+                                    className={styles.container}
                                 />
                                 <h3 key={product.id}>{product.name}</h3>
                                 <span>{product.description}</span>
-                                <p>R$ {product.price}</p>
+                                <p>{product.price.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</p>
                                 <Button
+                                    leftIcon={<BsCart4 color="white" />}
                                     colorScheme="blue"
-                                    size="sm"
+                                    size={'sm'}
                                     onClick={() => handleBuy(product.name, product.price)}
                                 >
                                     Comprar
@@ -81,7 +84,6 @@ const Home = ({ products }: PropTypes) => {
             </main>
 
             <footer className={styles.footer}>
-                Amiamor{" "}
                 <span className={styles.logo}>
                     <Image
                         src={
