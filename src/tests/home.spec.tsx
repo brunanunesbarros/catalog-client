@@ -1,8 +1,9 @@
 import { render, screen, fireEvent, getByText } from "@testing-library/react";
 import AxiosMock from 'axios-mock-adapter';
-import Home, { getStaticProps } from "../pages/";
+import Home, { getServerSideProps } from "../pages/";
 import { api } from "../services/api";
 import { mocked } from "jest-mock";
+import { GetServerSidePropsContext } from "next";
 
 type Product = {
     name: string;
@@ -65,10 +66,10 @@ const mockedData = [
 ]
 
 describe("Home page", () => {
-    it("Should load initial products in getStaticProps", async () => {
+    it("Should load initial products in getServerSideProps", async () => {
         apiMock.onGet('products').reply(200, mockedData);
 
-        const response = await getStaticProps({});
+        const response = await getServerSideProps({} as GetServerSidePropsContext);
         
         const expectedResultData = mockedData.map((item) => {
             return {

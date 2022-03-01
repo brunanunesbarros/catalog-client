@@ -1,7 +1,6 @@
-import type { GetStaticProps, NextPage } from "next";
+import type { GetServerSideProps } from "next";
 import Head from "next/head";
 import {Image} from '@chakra-ui/react';
-import { useEffect } from "react";
 import styles from "../styles/Home.module.css";
 import { api } from "../services/api";
 import { Button } from "@chakra-ui/react";
@@ -101,7 +100,7 @@ const Home = ({ products }: PropTypes) => {
 
 export default Home;
 
-export const getStaticProps: GetStaticProps = async () => {
+export const getServerSideProps: GetServerSideProps = async () => {
     const result = await api.get("/products");
     const productList = result.data.map((item: any) => {
         return {
@@ -112,6 +111,6 @@ export const getStaticProps: GetStaticProps = async () => {
     return {
         props: {
             products: productList,
-        },
+        }
     };
 };
