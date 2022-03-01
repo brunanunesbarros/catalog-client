@@ -92,7 +92,7 @@ describe("Home page", () => {
         for (let product of products) {
             expect(screen.getByText(product.name)).toBeInTheDocument()
             expect(screen.getByText(product.description)).toBeInTheDocument()
-            expect(screen.getByText('R$ ' + product.price)).toBeInTheDocument()
+            expect(screen.getByText(`R$ ${product.price},00`)).toBeInTheDocument()
         }
 
         expect(screen.getAllByText('Comprar').length).toEqual(2);
@@ -100,7 +100,7 @@ describe("Home page", () => {
 
     it("Should call the buy function when clicking on the product button", () => {
         const open = jest.fn((url) => {
-            expect(url).toBe("https://api.whatsapp.com/send?phone=5584988602905&text=Olá! Eu gostaria muito de comprar esse produto. Produto: Bordado Preço: R$\xA080,00\n\n");
+            expect(url).toBe("https://api.whatsapp.com/send?phone=5584987146852&text=Olá! Eu gostaria muito de comprar esse produto.\n\n Produto: Bordado\n Preço: R$\xA080,00\n\n");
         });
 
         Object.defineProperty(window, 'open', { value: open });

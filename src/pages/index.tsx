@@ -27,8 +27,8 @@ const Home = ({ products }: PropTypes) => {
             productPrice: productPrice.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
         }
 
-        let mensagem = `Olá! Eu gostaria muito de comprar esse produto. Produto: ${productName} Preço: ${productToBuy.productPrice}\n\n`;
-        window.open(`https://api.whatsapp.com/send?phone=5584988602905&text=${mensagem}`);
+        let mensagem = `Olá! Eu gostaria muito de comprar esse produto.\n\n Produto: ${productName}\n Preço: ${productToBuy.productPrice}\n\n`;
+        window.open(`https://api.whatsapp.com/send?phone=5584987146852&text=${mensagem}`);
     }
 
     return (
