@@ -101,7 +101,6 @@ export default Home;
 
 export const getStaticProps: GetStaticProps = async () => {
     const result = await api.get("/products");
-
     const productList = result.data.map((item: any) => {
         return {
             ...item.data,
