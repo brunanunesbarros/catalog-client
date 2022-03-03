@@ -1,10 +1,9 @@
 import type { GetServerSideProps } from "next";
 import Head from "next/head";
-import {Image} from '@chakra-ui/react';
+import { Image } from "@chakra-ui/react";
 import styles from "../styles/Home.module.css";
 import { api } from "../services/api";
-import { Button } from "@chakra-ui/react";
-import {BsCart4} from 'react-icons/bs'
+import { ProductCard } from "../components/ProductCard";
 
 type Product = {
     name: string;
@@ -12,6 +11,7 @@ type Product = {
     description: string;
     price: number;
     image: string;
+    quantity: number;
 };
 
 type PropTypes = {
@@ -19,15 +19,28 @@ type PropTypes = {
 };
 
 const Home = ({ products }: PropTypes) => {
-    
-    function handleBuy(productName: string, productPrice: number) {
+    function handleBuy(
+        productName: string,
+        productPrice: number,
+        quantity: number
+    ) {
         const productToBuy = {
             productName,
-            productPrice: productPrice.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})
-        }
-
-        let mensagem = `Olá! Eu gostaria muito de comprar esse produto.\n\n Produto: ${productName}\n Preço: ${productToBuy.productPrice}\n\n`;
-        window.open(`https://api.whatsapp.com/send?phone=5584987146852&text=${mensagem}`);
+            productPrice: productPrice.toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            }),
+            quantity,
+            precoTotal: (productPrice * quantity).toLocaleString("pt-BR", {
+                style: "currency",
+                currency: "BRL",
+            }),
+        };
+        console.log(productToBuy);
+        let mensagem = `Olá! Eu gostaria muito de comprar esse produto.\n\n Produto: ${productName}\n Preço: ${productToBuy.productPrice}\n\n Quantidade: ${quantity}\n\n Preço Total: ${productToBuy.precoTotal}`;
+        window.open(
+            `https://api.whatsapp.com/send?phone=5584987146852&text=${mensagem}`
+        );
     }
 
     return (
@@ -53,30 +66,11 @@ const Home = ({ products }: PropTypes) => {
                 <div className={styles.grid}>
                     {products.map((product) => {
                         return (
-                            <a
+                            <ProductCard
                                 key={product.id}
-                                className={styles.card}
-                            >
-                                <Image
-                                    boxSize="100%"
-                                    height="150px"
-                                    objectFit="cover"
-                                    src={product.image}
-                                    alt={product.name}
-                                    className={styles.container}
-                                />
-                                <h3 key={product.id}>{product.name}</h3>
-                                <span>{product.description}</span>
-                                <p>{product.price.toLocaleString('pt-BR', {style: 'currency', currency: 'BRL'})}</p>
-                                <Button
-                                    leftIcon={<BsCart4 color="white" />}
-                                    colorScheme="blue"
-                                    size={'sm'}
-                                    onClick={() => handleBuy(product.name, product.price)}
-                                >
-                                    Comprar
-                                </Button>
-                            </a>
+                                product={product}
+                                handleBuy={handleBuy}
+                            />
                         );
                     })}
                 </div>
@@ -111,6 +105,6 @@ export const getServerSideProps: GetServerSideProps = async () => {
     return {
         props: {
             products: productList,
-        }
+        },
     };
 };
