@@ -2,19 +2,11 @@ import { Button, HStack, Input, Image, useNumberInput } from "@chakra-ui/react";
 import { useState } from "react";
 import { BsCart4 } from "react-icons/bs";
 import styles from "../styles/Home.module.css";
+import { Product } from "../types/product";
 
 type ProductProps = {
     product: Product;
     handleBuy: (productName: string, productPrice: number, quantity: number) => void;
-};
-
-type Product = {
-    name: string;
-    id: string;
-    description: string;
-    price: number;
-    image: string;
-    quantity: number;
 };
 
 export const ProductCard = ({ product, handleBuy }: ProductProps) => {

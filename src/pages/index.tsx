@@ -4,15 +4,7 @@ import { Image } from "@chakra-ui/react";
 import styles from "../styles/Home.module.css";
 import { api } from "../services/api";
 import { ProductCard } from "../components/ProductCard";
-
-type Product = {
-    name: string;
-    id: string;
-    description: string;
-    price: number;
-    image: string;
-    quantity: number;
-};
+import { Product } from "../types/product";
 
 type PropTypes = {
     products: Product[];
