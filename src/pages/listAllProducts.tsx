@@ -28,13 +28,23 @@ import {
     DrawerFooter,
     useDisclosure,
 } from "@chakra-ui/react";
-import React from "react";
+import { parseCookies } from "nookies";
+import React, { useContext, useEffect } from "react";
 import { FiLogOut } from "react-icons/fi";
 import { GrAdd } from "react-icons/gr";
+import { AuthContext } from "../contexts/authProvider";
 
 export default function ListAllProducts() {
     const { isOpen, onOpen, onClose } = useDisclosure();
-    // const firstField = React.useRef()
+    const { signOut, user } = useContext(AuthContext);
+
+    useEffect(() => {
+        
+        const { "catalog-client": token } = parseCookies();
+        if (!token) {
+            signOut();
+        }
+    }, [signOut]);
 
     return (
         <Flex
@@ -52,19 +62,20 @@ export default function ListAllProducts() {
             >
                 <Tag size="lg" bg="blue.600" color="white" borderRadius="full">
                     <Avatar
-                        src="https://scontent.fmvf2-1.fna.fbcdn.net/v/t1.6435-9/186501733_3020964558135868_6931020405591876253_n.jpg?_nc_cat=109&ccb=1-5&_nc_sid=09cbfe&_nc_eui2=AeGVDDZQtDDShnZWT_SkMekpeS52vL6oLoh5Lna8vqguiNMjUXDVOp4DUcjWvRtAVDb8Pg83S_iF-wvQeEXLuAPz&_nc_ohc=0UrleE4zsIgAX_eEHPV&_nc_ht=scontent.fmvf2-1.fna&oh=00_AT8frFec6ohq74DSOta-h7xocv9BQWFmQ3dyf2fhq-8t_g&oe=624793EB"
+                        src={user?.avatar}
                         size="md"
-                        name="Mickaelle"
+                        name={user?.name}
                         ml={-3}
                         mr={2}
                     />
-                    <TagLabel>Mickaelle</TagLabel>
+                    <TagLabel>{user?.name}</TagLabel>
                 </Tag>
                 <Button
                     size="md"
                     bg="blue.600"
                     color="white"
                     leftIcon={<FiLogOut />}
+                    onClick={signOut}
                 >
                     <p>Sair</p>
                 </Button>
@@ -96,7 +107,7 @@ export default function ListAllProducts() {
                             </Box>
 
                             <Box>
-                            <FormLabel htmlFor="imageURL">Imagem</FormLabel>
+                                <FormLabel htmlFor="imageURL">Imagem</FormLabel>
                                 <Input
                                     // ref={firstField}
                                     id="imageURL"
@@ -105,7 +116,9 @@ export default function ListAllProducts() {
                             </Box>
 
                             <Box>
-                            <FormLabel htmlFor="description">Descrição</FormLabel>
+                                <FormLabel htmlFor="description">
+                                    Descrição
+                                </FormLabel>
                                 <Input
                                     // ref={firstField}
                                     id="description"
@@ -114,7 +127,9 @@ export default function ListAllProducts() {
                             </Box>
 
                             <Box>
-                            <FormLabel htmlFor="quantity">Quantidade</FormLabel>
+                                <FormLabel htmlFor="quantity">
+                                    Quantidade
+                                </FormLabel>
                                 <Input
                                     // ref={firstField}
                                     id="quantity"
@@ -124,7 +139,7 @@ export default function ListAllProducts() {
                             </Box>
 
                             <Box>
-                            <FormLabel htmlFor="price">Preço</FormLabel>
+                                <FormLabel htmlFor="price">Preço</FormLabel>
                                 <Input
                                     // ref={firstField}
                                     id="price"
@@ -156,19 +171,14 @@ export default function ListAllProducts() {
                 </Button>
             </Flex>
 
-            <Table
-                size={"lg"}
-                bg="gray.50"
-                m="1rem auto"
-                w={"80%"}
-            >
+            <Table size={"lg"} bg="gray.50" m="1rem auto" w={"80%"}>
                 <TableCaption mt="0" bg="gray.50">
                     <Badge
                         m="1rem"
                         borderRadius="full"
                         px="3"
                         bg="blue.600"
-                        color="white" 
+                        color="white"
                     >
                         Total de produtos: 4{" "}
                     </Badge>

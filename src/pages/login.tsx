@@ -15,12 +15,28 @@ import {
 
 import { MdAlternateEmail } from "react-icons/md";
 import { HiLockClosed } from "react-icons/hi";
-import { useState } from "react";
+import { useContext, useEffect, useState } from "react";
+import { User } from "../types/user";
+import { api } from "../services/api";
+import Router from "next/router";
+import { parseCookies, setCookie } from "nookies";
+import { AuthContext } from "../contexts/authProvider";
 
 export default function Login() {
     const [showPassword, setShowPassword] = useState(false);
-
     const handleShowClick = () => setShowPassword(!showPassword);
+    const [email, setEmail] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
+
+    const { handleLogin } = useContext(AuthContext);
+
+    useEffect(() => {
+        const { "catalog-client": token } = parseCookies();
+
+        if (token) {
+            Router.push('/listAllProducts')
+        }
+    }, []);
 
     return (
         <Flex
@@ -52,6 +68,8 @@ export default function Login() {
                             id="email"
                             type="email"
                             placeholder="Email"
+                            value={email}
+                            onChange={(e) => setEmail(e.target.value)}
                         />
                     </InputGroup>
 
@@ -63,6 +81,8 @@ export default function Login() {
                             id="password"
                             type="password"
                             placeholder="Senha"
+                            value={password}
+                            onChange={(e) => setPassword(e.target.value)}
                         />
                         <InputRightElement width="4.5rem">
                             <Button
@@ -81,6 +101,7 @@ export default function Login() {
                         colorScheme="teal"
                         width="full"
                         marginTop="2rem !important"
+                        onClick={() => handleLogin(email, password)}
                     >
                         Login
                     </Button>
