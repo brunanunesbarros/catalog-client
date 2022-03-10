@@ -5,6 +5,7 @@ import styles from "../styles/Home.module.css";
 import { api } from "../services/api";
 import { ProductCard } from "../components/ProductCard";
 import { Product } from "../types/product";
+import { Router } from "next/router";
 
 type PropTypes = {
     products: Product[];
@@ -86,8 +87,17 @@ const Home = ({ products }: PropTypes) => {
 
 export default Home;
 
-export const getServerSideProps: GetServerSideProps = async () => {
-    const result = await api.get("/products");
+export const getServerSideProps: GetServerSideProps = async ({ query }) => {
+    if (!query.code) {
+        return { 
+            notFound: true
+        }
+    }
+    const result = await api.get("/products", {
+        headers: {
+            userId: query.code as string,
+        },
+    });
     const productList = result.data.map((item: any) => {
         return {
             ...item.data,

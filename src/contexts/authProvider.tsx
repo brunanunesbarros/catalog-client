@@ -1,6 +1,7 @@
 import Router from "next/router";
 import { destroyCookie, parseCookies, setCookie } from "nookies";
 import { createContext, useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { api } from "../services/api";
 import { authProviderProps } from "../types/authProviderProps";
 import { User } from "../types/user";
@@ -30,7 +31,11 @@ export function AuthProvider({ children }: authProviderProps) {
                 setUser(response.data)
             })
             .catch(error => {
-                console.error(error);
+                if (error.response.status === 401 && error.response.data.message === 'jwt expired') {
+                    toast.error("Sessão expirada, faça login novamente!")
+                    signOut();
+                }
+                console.log(error.response);
             })
     }, [token])
 
@@ -40,7 +45,6 @@ export function AuthProvider({ children }: authProviderProps) {
             password,
         })
             .then((response) => {
-                console.log(response.data);
                 setCookie(null, "catalog-client", response.data.token, {
                     maxAge: 30 * 24 * 60,
                     path: "/",
@@ -57,6 +61,7 @@ export function AuthProvider({ children }: authProviderProps) {
     return (
         <AuthContext.Provider value={{ handleLogin, signOut, token, user }}>
             {children}
+            <Toaster />
         </AuthContext.Provider>
     );
 }

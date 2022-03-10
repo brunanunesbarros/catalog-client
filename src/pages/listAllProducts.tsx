@@ -27,9 +27,11 @@ import {
     Input,
     DrawerFooter,
     useDisclosure,
+    Text,
 } from "@chakra-ui/react";
 import { parseCookies } from "nookies";
 import React, { useContext, useEffect, useState } from "react";
+import toast, { Toaster } from "react-hot-toast";
 import { FiLogOut } from "react-icons/fi";
 import { GrAdd } from "react-icons/gr";
 import { AuthContext } from "../contexts/authProvider";
@@ -70,6 +72,16 @@ export default function ListAllProducts() {
         }
     }, [user]);
 
+    async function handleCopyUrl() {
+        const url = `${process.env.NEXT_PUBLIC_HOST_APP}?code=${user?.id}`;
+            try {
+              await navigator.clipboard.writeText(url);
+              toast.success('Link copiado com sucesso!')
+            } catch (err) {
+              toast.error('Hmm, algo deu errado, tente novamente.')
+            }
+    }
+
     return (
         <Flex
             flexDirection="column"
@@ -94,15 +106,20 @@ export default function ListAllProducts() {
                     />
                     <TagLabel>{user?.name}</TagLabel>
                 </Tag>
-                <Button
-                    size="md"
-                    bg="blue.600"
-                    color="white"
-                    leftIcon={<FiLogOut />}
-                    onClick={signOut}
-                >
-                    <p>Sair</p>
-                </Button>
+                <Flex>
+                    <Tag as="button" onClick={handleCopyUrl} m="0 1rem">
+                        Copiar link da loja
+                    </Tag>
+                    <Button
+                        size="md"
+                        bg="blue.600"
+                        color="white"
+                        leftIcon={<FiLogOut />}
+                        onClick={signOut}
+                    >
+                        <p>Sair</p>
+                    </Button>
+                </Flex>
             </HStack>
 
             <Drawer
@@ -245,6 +262,7 @@ export default function ListAllProducts() {
                     })}
                 </Tbody>
             </Table>
+            <Toaster />
         </Flex>
     );
 }

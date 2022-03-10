@@ -25,12 +25,17 @@ export default async function handler(
       .json({ message: 'Token not present.' })
   }
 
-  const email = decryptJwt(token);
+  const resultDecrypt: { 
+    result: string | null, 
+    message: string, 
+    success: boolean } = decryptJwt(token);
 
-  if (email === null) {
-    res.status(401).json({message: 'Token bad formatted'})
+  if (resultDecrypt.success === false || resultDecrypt.result === null) {
+    res.status(401).json({ message: resultDecrypt.message});
   }
 
+  const email = resultDecrypt.result;
+  
   let user: {data: User, ref: any} = {} as any;
 
   try {
