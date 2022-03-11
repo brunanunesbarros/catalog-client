@@ -29,8 +29,10 @@ import {
     useDisclosure,
     Text,
 } from "@chakra-ui/react";
+import Router from "next/router";
 import { parseCookies } from "nookies";
 import React, { useContext, useEffect, useState } from "react";
+import { useCallback } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { FiLogOut } from "react-icons/fi";
 import { GrAdd } from "react-icons/gr";
@@ -41,7 +43,12 @@ import { Product } from "../types/product";
 export default function ListAllProducts() {
     const { isOpen, onOpen, onClose } = useDisclosure();
     const { signOut, user } = useContext(AuthContext);
-    const [products, setProducts] = useState<Product[]>([]);
+
+    const [products, setProducts] = useState<Product[]>([])
+    const [name, setName] = useState<string>('')
+    const [url, setUrl] = useState<string>('')
+    const [description, setDescription] = useState<string>('')
+    const [price, setPrice] = useState<number>()
 
     useEffect(() => {
         const { "catalog-client": token } = parseCookies();
@@ -50,27 +57,31 @@ export default function ListAllProducts() {
         }
     }, [signOut]);
 
-    useEffect(() => {
-        if (user) {
-            api.get("/api/products", {
-                headers: {
-                    userId: user?.id as string,
-                },
-            })
-                .then((result) => {
-                    const productList = result.data.map((item: any) => {
-                        return {
-                            ...item.data,
-                            id: item.ref["@ref"].id,
-                        };
-                    });
-                    setProducts(productList);
+    const fetchProducts = useCallback(() => {
+            if (user) {
+                api.get("/api/products", {
+                    headers: {
+                        userId: user?.id as string,
+                    },
                 })
-                .catch((error) => {
-                    console.error(error);
-                });
-        }
-    }, [user]);
+                    .then((result) => {
+                        const productList = result.data.map((item: any) => {
+                            return {
+                                ...item.data,
+                                id: item.ref["@ref"].id,
+                            };
+                        });
+                        setProducts(productList);
+                    })
+                    .catch((error) => {
+                        console.error(error);
+                    });
+            }
+        }, [user])
+
+    useEffect(() => {
+        fetchProducts();
+    }, [fetchProducts]);
 
     async function handleCopyUrl() {
         const url = `${process.env.NEXT_PUBLIC_HOST_APP}?code=${user?.id}`;
@@ -80,6 +91,26 @@ export default function ListAllProducts() {
             } catch (err) {
               toast.error('Hmm, algo deu errado, tente novamente.')
             }
+    }
+
+    async function addNewProduct() {
+        const newProduct = {
+            name,
+            url,
+            description,
+            price
+        }
+
+        await api.post('/api/addNewProduct', newProduct)
+        .then(() => {
+            toast.success('Produto adicionado com sucesso!')
+            onClose()
+            fetchProducts()
+        })
+        .catch((error) => {
+            console.log(error)
+            toast.error('Ops, algo deu errado, tente novamente...')
+        })
     }
 
     return (
@@ -126,7 +157,6 @@ export default function ListAllProducts() {
                 size="sm"
                 isOpen={isOpen}
                 placement="right"
-                // initialFocusRef={firstField}
                 onClose={onClose}
             >
                 <DrawerOverlay />
@@ -141,7 +171,8 @@ export default function ListAllProducts() {
                             <Box>
                                 <FormLabel htmlFor="name">Nome</FormLabel>
                                 <Input
-                                    // ref={firstField}
+                                    value={name}
+                                    onChange={(e) => setName(e.target.value)}
                                     id="name"
                                     placeholder="Nome do produto"
                                 />
@@ -150,7 +181,8 @@ export default function ListAllProducts() {
                             <Box>
                                 <FormLabel htmlFor="imageURL">Imagem</FormLabel>
                                 <Input
-                                    // ref={firstField}
+                                    value={url}
+                                    onChange={(e) => setUrl(e.target.value)}
                                     id="imageURL"
                                     placeholder="Link da imagem"
                                 />
@@ -161,28 +193,18 @@ export default function ListAllProducts() {
                                     Descrição
                                 </FormLabel>
                                 <Input
-                                    // ref={firstField}
+                                    value={description}
+                                    onChange={(e) => setDescription(e.target.value)}
                                     id="description"
                                     placeholder="Descrição do produto"
                                 />
                             </Box>
 
                             <Box>
-                                <FormLabel htmlFor="quantity">
-                                    Quantidade
-                                </FormLabel>
-                                <Input
-                                    // ref={firstField}
-                                    id="quantity"
-                                    type="number"
-                                    placeholder="Quantidade"
-                                />
-                            </Box>
-
-                            <Box>
                                 <FormLabel htmlFor="price">Preço</FormLabel>
                                 <Input
-                                    // ref={firstField}
+                                    value={price}
+                                    onChange={(e) => setPrice(Number(e.target.value))}
                                     id="price"
                                     type="number"
                                     placeholder="Preço"
@@ -194,7 +216,7 @@ export default function ListAllProducts() {
                         <Button variant="outline" mr={3} onClick={onClose}>
                             Cancelar
                         </Button>
-                        <Button colorScheme="blue">Salvar</Button>
+                        <Button colorScheme="blue" onClick={addNewProduct}>Salvar</Button>
                     </DrawerFooter>
                 </DrawerContent>
             </Drawer>

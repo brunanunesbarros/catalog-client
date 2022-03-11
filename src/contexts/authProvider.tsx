@@ -35,7 +35,6 @@ export function AuthProvider({ children }: authProviderProps) {
                     toast.error("Sessão expirada, faça login novamente!")
                     signOut();
                 }
-                console.log(error.response);
             })
     }, [token])
 
